@@ -66,3 +66,8 @@ frontend/coverage/
 
 **/.env
 **/.tool-versions
+
+# === Eclipse ===
+.classpath
+.project
+.settings/

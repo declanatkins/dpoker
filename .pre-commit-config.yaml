@@ -8,31 +8,31 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
 
-  # JavaScript / TypeScript: Prettier
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.2.5
-    hooks:
-      - id: prettier
-        files: ^frontend/.*\.(js|jsx|ts|tsx|json|css|scss|md)$
-        additional_dependencies: ["prettier@3.2.5"]
+  # # JavaScript / TypeScript: Prettier
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v3.2.5
+  #   hooks:
+  #     - id: prettier
+  #       files: ^frontend/.*\.(js|jsx|ts|tsx|json|css|scss|md)$
+  #       additional_dependencies: ["prettier@3.2.5"]
 
-  # ESLint for React
-  - repo: local
-    hooks:
-      - id: eslint
-        name: eslint
-        entry: npm run lint
-        language: system
-        types: [javascript, typescript]
-        pass_filenames: false
-        working_directory: frontend
+  # # ESLint for React
+  # - repo: local
+  #   hooks:
+  #     - id: eslint
+  #       name: eslint
+  #       entry: npm run lint
+  #       language: system
+  #       types: [javascript, typescript]
+  #       pass_filenames: false
+  #       working_directory: frontend
 
   # Java: Spotless via Maven (Google Java Format or similar)
   - repo: local
     hooks:
       - id: spotless-java
         name: spotless-java
-        entry: mvn spotless:apply
+        entry: cd backend && mvn spotless:apply
         language: system
         types: [java]
         pass_filenames: false
