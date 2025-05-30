@@ -1,0 +1,68 @@
+# === Global ===
+*.log
+*.tmp
+*.swp
+.DS_Store
+.env
+.env.local
+node_modules/
+dist/
+build/
+.cache/
+.idea/
+.vscode/
+*.iml
+
+# === OS-specific ===
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Java / Spring Boot (Maven) ===
+/backend/target/
+**/*.class
+**/*.jar
+**/*.war
+**/hs_err_pid*
+/backend/.mvn/wrapper/maven-wrapper.jar
+/backend/mvnw
+/backend/mvnw.cmd
+
+# === Lombok ===
+**/lombok.config
+
+# === React ===
+/frontend/node_modules/
+/frontend/build/
+/frontend/.next/
+/frontend/.turbo/
+/frontend/.eslintcache
+/frontend/coverage/
+/frontend/yarn.lock
+
+# === Logs ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# === Prettier / ESLint ===
+/frontend/.prettiercache
+/frontend/.stylelintcache
+
+# === Test Reports ===
+/frontend/junit.xml
+/backend/surefire-reports/
+backend/test-output/
+frontend/coverage/
+
+# === Misc ===
+/**/.DS_Store
+**/package-lock.json
+**/pnpm-lock.yaml
+**/yarn.lock
+
+**/.env
+**/.tool-versions
