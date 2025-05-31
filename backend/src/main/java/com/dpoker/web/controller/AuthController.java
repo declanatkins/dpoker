@@ -1,4 +1,4 @@
-package com.dpoker.poker.controller;
+package com.dpoker.web.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.dpoker.poker.dto.auth.JWTDetails;
-import com.dpoker.poker.security.JWTUtil;
-import com.dpoker.poker.service.UserService;
-import com.dpoker.poker.model.User;
+import com.dpoker.web.dto.auth.JWTDetails;
+import com.dpoker.web.model.User;
+import com.dpoker.web.security.JWTUtil;
+import com.dpoker.web.service.UserService;
 
 
 @RestController

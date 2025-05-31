@@ -1,4 +1,4 @@
-package com.dpoker.poker.security;
+package com.dpoker.web.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

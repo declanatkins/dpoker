@@ -1,10 +1,10 @@
-package com.dpoker.poker.service;
+package com.dpoker.web.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dpoker.poker.model.User;
-import com.dpoker.poker.repository.UserRespository;
+import com.dpoker.web.model.User;
+import com.dpoker.web.repository.UserRespository;
 
 @Service
 public class UserService {

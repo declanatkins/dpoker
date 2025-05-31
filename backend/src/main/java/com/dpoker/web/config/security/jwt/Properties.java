@@ -1,4 +1,4 @@
-package com.dpoker.poker.config.security.jwt;
+package com.dpoker.web.config.security.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

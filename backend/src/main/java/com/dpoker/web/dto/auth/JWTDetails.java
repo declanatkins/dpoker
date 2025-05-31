@@ -1,4 +1,4 @@
-package com.dpoker.poker.dto.auth;
+package com.dpoker.web.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

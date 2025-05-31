@@ -1,4 +1,4 @@
-package com.dpoker.poker.config.security;
+package com.dpoker.web.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

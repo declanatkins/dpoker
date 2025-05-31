@@ -1,6 +1,4 @@
-package com.dpoker.poker.security;
-
-import com.dpoker.poker.config.security.jwt.Properties;
+package com.dpoker.web.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,6 +7,8 @@ import java.security.Key;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
+
+import com.dpoker.web.config.security.jwt.Properties;
 
 
 
