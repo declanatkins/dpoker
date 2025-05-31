@@ -8,3 +8,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+jwt:
+  secret: ${JWT_SECRET}
+  access_expiration: 1800
+  refresh_expiration: 86400
