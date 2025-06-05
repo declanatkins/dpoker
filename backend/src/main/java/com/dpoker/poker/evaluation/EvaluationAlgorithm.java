@@ -11,8 +11,6 @@ public interface EvaluationAlgorithm {
 
     public HandType getHandType(Card[] hand);
 
-    public String getHandDescription(Card[] hand);
-
     public int compareHands(Card[] hand1, Card[] hand2);
 
 }

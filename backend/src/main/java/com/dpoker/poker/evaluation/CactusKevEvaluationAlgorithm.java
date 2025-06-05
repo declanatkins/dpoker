@@ -1,6 +1,8 @@
 package com.dpoker.poker.evaluation;
 
-import java.lang.reflect.Array;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -11,14 +13,53 @@ import com.dpoker.poker.HandType;
 
 public class CactusKevEvaluationAlgorithm implements EvaluationAlgorithm {
 
+    /*
+     * This implementation is based on the code in the blogpost:
+     * https://joshgoestoflatiron.medium.com/july-17-evaluating-poker-hands-with-lookup-tables-and-perfect-hashing-c21e056da130
+     *
+     * It uses precomputed lookup tables and a perfect hashing algorithm to evaluate poker hands.
+     */
+
     private static final int[] HASH_ADJUST = loadDataFile("data/hash_adjust.dat");
     private static final int[] HASH_VALUES = loadDataFile("data/hash_values.dat");
     private static final int[] FLUSH_LOOKUP_TABLE = loadDataFile("data/flush_lookup.dat");
     private static final int[] FIVE_UNIQUE_CARDS_LOOKUP_TABLE = loadDataFile("data/five_unique_cards.dat");
 
-    private static int[] loadDataFile(String filename) {
-        int[] data = null;
+    private static final int HIGH_CARD_LOWER_BOUND = 6816;
+    private static final int ONE_PAIR_LOWER_BOUND = 3326;
+    private static final int TWO_PAIR_LOWER_BOUND = 2468;
+    private static final int THREE_OF_A_KIND_LOWER_BOUND = 1610;
+    private static final int STRAIGHT_LOWER_BOUND = 1600;
+    private static final int FLUSH_LOWER_BOUND = 323;
+    private static final int FULL_HOUSE_LOWER_BOUND = 167;
+    private static final int FOUR_OF_A_KIND_LOWER_BOUND = 11;
+    private static final int STRAIGHT_FLUSH_LOWER_BOUND = 2;
 
+
+    private static int[] loadDataFile(String filename) {
+        List<Integer> dataList = new ArrayList<>();
+
+        try (
+            InputStream is = CactusKevEvaluationAlgorithm.class.getClassLoader().getResourceAsStream(filename);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is))
+        ) {
+
+            if (is == null) {
+                throw new IllegalArgumentException("Resource not found: " + filename);
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                for (String part : parts) {
+                    dataList.add(Integer.parseInt(part.trim()));
+                }
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Error reading data file: " + filename, e);
+        }
+
+        return dataList.stream().mapToInt(Integer::intValue).toArray();
     }
 
     private static final Map<Card.Rank, Integer> RANK_PRIME_VALUE = new EnumMap<>(
@@ -49,10 +90,11 @@ public class CactusKevEvaluationAlgorithm implements EvaluationAlgorithm {
     );
 
     private int getCardValue(Card card) {
+        int rankOrdinal = card.getRank().ordinal();
         int rankValue = RANK_PRIME_VALUE.get(card.getRank());
         int suitValue = SUIT_VALUE.get(card.getSuit());
 
-        return rankValue | rankValue << 8 | suitValue << 12 | ((1 << rankValue) << 16);
+        return rankValue | rankOrdinal << 8 | suitValue << 12 | ((1 << rankOrdinal) << 16);
     }
 
     private boolean isFlush(Card[] cards) {
@@ -68,7 +110,7 @@ public class CactusKevEvaluationAlgorithm implements EvaluationAlgorithm {
         for (Card card : cards) {
             total |= this.getCardValue(card);
         }
-        return total << 16;
+        return total >> 16;
     }
 
     private int getFlushRank(Card[] cards) {
@@ -96,48 +138,63 @@ public class CactusKevEvaluationAlgorithm implements EvaluationAlgorithm {
         return adjust ^ HASH_ADJUST[(primeMultiplicand >>> 8) & 0x1ff];
     }
 
-    @Override
-    public HandType getHandType(Card[] hand) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getHandType'");
+    private int getHandNumericalValue(Card[] hand) {
+        if (this.isFlush(hand)) {
+            return this.getFlushRank(hand);
+        }
+        int fiveUniqueCardsRank = this.getFiveUniqueCardsRank(hand);
+        if (fiveUniqueCardsRank != 0) {
+            return fiveUniqueCardsRank;
+        }
+        return HASH_VALUES[this.findFast(this.getPrimeMultiplicand(hand))];
     }
 
     @Override
-    public String getHandDescription(Card[] hand) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getHandDescription'");
+    public HandType getHandType(Card[] hand) {
+        int handValue = this.getHandNumericalValue(hand);
+        if (handValue >= HIGH_CARD_LOWER_BOUND) {
+            return HandType.HIGH_CARD;
+        }
+        if (handValue >= ONE_PAIR_LOWER_BOUND) {
+            return HandType.ONE_PAIR;
+        }
+        if (handValue >= TWO_PAIR_LOWER_BOUND) {
+            return HandType.TWO_PAIR;
+        }
+        if (handValue >= THREE_OF_A_KIND_LOWER_BOUND) {
+            return HandType.THREE_OF_A_KIND;
+        }
+        if (handValue >= STRAIGHT_LOWER_BOUND) {
+            return HandType.STRAIGHT;
+        }
+        if (handValue >= FLUSH_LOWER_BOUND) {
+            return HandType.FLUSH;
+        }
+        if (handValue >= FULL_HOUSE_LOWER_BOUND) {
+            return HandType.FULL_HOUSE;
+        }
+        if (handValue >= FOUR_OF_A_KIND_LOWER_BOUND) {
+            return HandType.FOUR_OF_A_KIND;
+        }
+        if (handValue >= STRAIGHT_FLUSH_LOWER_BOUND) {
+            return HandType.STRAIGHT_FLUSH;
+        }
+        return HandType.ROYAL_FLUSH;
     }
 
     @Override
     public int compareHands(Card[] hand1, Card[] hand2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compareHands'");
+        return Integer.compare(
+            this.getHandNumericalValue(hand1),
+            this.getHandNumericalValue(hand2)
+        );
     }
 
     @Override
     public List<Card[]> sortHands(List<Card[]> hands) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sortHands'");
+        return hands.stream()
+            .sorted(this::compareHands)
+            .toList();
     }
 
 }
-
-
-/*
- * exports.primeMultiplicand = hand => hand.reduce( ( total, card ) => total * ( card & 0xFF ), 1 );
-// same as exports.primeMultiplicand = hand => ( hand[ 0 ] & 0xFF ) * ( hand[ 1] & 0xFF ) * ( hand[ 2 ] & 0xFF ) * ( hand[ 3 ] & 0xFF ) * ( hand[ 4 ] & 0xFF );
-exports.findFast = u => {
-  u += 0xe91aaa35;
-  u ^= u >>> 16;
-  u += u << 8;
-  u ^= u >>> 4;
-  let a  = ( u + ( u << 2 ) ) >>> 19;
-  return a ^ hashAdjust[ ( u >>> 8 ) & 0x1ff ];
-};
-exports.handRank = hand => {
-  if ( this.flush( hand ) ) return this.flushRank( hand );
-  let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
-  if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
-  return hashValues[ this.findFast( this.primeMultiplicand( hand ) ) ];
-};
- */

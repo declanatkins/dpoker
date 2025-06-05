@@ -1,5 +1,6 @@
 package com.dpoker.poker.player;
 
+import com.dpoker.poker.HandOfCards;
 import com.dpoker.poker.player.strategy.PlayerStrategy;
 
 import lombok.Builder;
